@@ -5,7 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -q FlashFacil.zip
+      - name: Descompactar
+        run: |
+          ls -la
+          Z=$(ls *.zip 2>/dev/null | head -n1 || true)
+          if [ -n "$Z" ]; then unzip -q "$Z"; fi
+          test -d FlashFacil || { echo "Pasta FlashFacil não encontrada. Veja a listagem acima."; exit 1; }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v4
