@@ -1,5 +1,8 @@
 name: Build APK
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -20,8 +23,15 @@ jobs:
         run: bash tools/build_heimdall.sh
       - name: Compilar APK
         working-directory: FlashFacil
-        run: gradle :app:assembleDebug --no-daemon --stacktrace 2>&1 | tail -n 120
+        run: gradle :app:assembleDebug --no-daemon --console=plain --stacktrace 2>&1 | tee "$RUNNER_TEMP/flashfacil-gradle.log"
         shell: bash
+      - name: Salvar log da compilacao
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlashFacil-build-log
+          path: ${{ runner.temp }}/flashfacil-gradle.log
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         with:
           name: FlashFacil-apk
