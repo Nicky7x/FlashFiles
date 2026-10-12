@@ -29,6 +29,16 @@ jobs:
             echo "Arquivo Gradle do app nao encontrado"
             exit 1
           fi
+      - name: Corrigir import ActivityResultContracts
+        working-directory: FlashFacil
+        run: |
+          FILE=app/src/main/java/com/flashfacil/app/MainActivity.kt
+          test -f "$FILE"
+          echo "Antes:"
+          grep -n 'ActivityResultContracts' "$FILE" || true
+          sed -i 's/androidx\.activity\.contract\.ActivityResultContracts/androidx.activity.result.contract.ActivityResultContracts/g' "$FILE"
+          echo "Depois:"
+          grep -n 'ActivityResultContracts' "$FILE" || true
       - name: Compilar Heimdall nativo
         working-directory: FlashFacil
         run: bash tools/build_heimdall.sh
