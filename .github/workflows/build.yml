@@ -18,6 +18,17 @@ jobs:
         with: { distribution: temurin, java-version: 17 }
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: 8.9 }
+      - name: Corrigir dependencia Activity Result
+        working-directory: FlashFacil
+        run: |
+          if [ -f app/build.gradle.kts ]; then
+            printf '\ndependencies { implementation("androidx.activity:activity-ktx:1.9.3") }\n' >> app/build.gradle.kts
+          elif [ -f app/build.gradle ]; then
+            printf "\ndependencies { implementation 'androidx.activity:activity-ktx:1.9.3' }\n" >> app/build.gradle
+          else
+            echo "Arquivo Gradle do app nao encontrado"
+            exit 1
+          fi
       - name: Compilar Heimdall nativo
         working-directory: FlashFacil
         run: bash tools/build_heimdall.sh
